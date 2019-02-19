@@ -13,7 +13,7 @@ require('dotenv').config({ path: ENV_FILE });
 let server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 8000, function() {
     console.log(`\n${ server.name } listening to ${ server.url }.`);
-    console.log(`\nTo talk to your bot, open custom-dialogs.bot file in the emulator.`);
+    console.log(`\nTo talk to your bot, open azure-chatbot.bot file in the emulator.`);
 });
 
 // .bot file path

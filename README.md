@@ -34,8 +34,7 @@
 ## Connect to the bot using Bot Framework Emulator **v4**
 - Launch Bot Framework Emulator
 - File -> Open Bot Configuration
-- Navigate to `javascript_nodejs/21.custom-dialogs` folder
-- Select `custom-dialogs.bot` file
+- Select `azure-chatbot.bot` file
 
 # Custom Dialogs
 BotFramework provides a built-in base class called `Dialog`. By subclassing Dialog, developers
