@@ -267,18 +267,18 @@ class SampleBot {
 
     createAudioCard() {
         return CardFactory.audioCard(
-            'I am your father',
-            ['https://www.mediacollege.com/downloads/sound-effects/star-wars/darthvader/darthvader_yourfather.wav'],
+            'How to Create Azure Chatbot',
+            ['https://www.youtube.com/watch?v=v19iRzWS_-I'],
             CardFactory.actions([
                 {
                     type: 'openUrl',
                     title: 'Read more',
-                    value: 'https://en.wikipedia.org/wiki/The_Empire_Strikes_Back'
+                    value: 'https://www.youtube.com/watch?v=v19iRzWS_-I'
                 }
             ]),
             {
-                subtitle: 'Star Wars: Episode V - The Empire Strikes Back',
-                text: 'The Empire Strikes Back (also known as Star Wars: Episode V – The Empire Strikes Back) is a 1980 American epic space opera film directed by Irvin Kershner. Leigh Brackett and Lawrence Kasdan wrote the screenplay, with George Lucas writing the film\'s story and serving as executive producer. The second installment in the original Star Wars trilogy, it was produced by Gary Kurtz for Lucasfilm Ltd. and stars Mark Hamill, Harrison Ford, Carrie Fisher, Billy Dee Williams, Anthony Daniels, David Prowse, Kenny Baker, Peter Mayhew and Frank Oz.',
+                subtitle: 'How to Create Azure Chatbot',
+                text: 'Learn how you can create an Azure ChatBot in 15 minutes or less.  This amazing service can help you scale yourself and your business to create more productivity time and help you with your work/life balance.',
                 image: 'https://upload.wikimedia.org/wikipedia/en/3/3c/SW_-_Empire_Strikes_Back.jpg'
             }
         );
@@ -300,7 +300,7 @@ class SampleBot {
 
     createReceiptCard() {
         return CardFactory.receiptCard({
-            title: 'John Doe',
+            title: 'Hardy Saputra',
             facts: [
                 {
                     key: 'Order Number',
@@ -364,15 +364,15 @@ class SampleBot {
     createVideoCard() {
         return CardFactory.videoCard(
             '2018 Imagine Cup World Championship Intro',
-            [{ url: 'https://sec.ch9.ms/ch9/783d/d57287a5-185f-4df9-aa08-fcab699a783d/IC18WorldChampionshipIntro2.mp4' }],
+            [{ url: 'https://www.youtube.com/watch?v=EP3ShiJVpW8' }],
             [{
                 type: 'openUrl',
                 title: 'Lean More',
-                value: 'https://channel9.msdn.com/Events/Imagine-Cup/World-Finals-2018/2018-Imagine-Cup-World-Championship-Intro'
+                value: 'https://www.youtube.com/watch?v=EP3ShiJVpW8'
             }],
             {
-                subtitle: 'by Microsoft',
-                text: 'Microsoft\'s Imagine Cup has empowered student developers around the world to create and innovate on the world stage for the past 16 years. These innovations will shape how we live, work and play.'
+                subtitle: 'by Hardy',
+                text: 'Microsoft\'s Thinking of jumping on the chatbot bandwagon? Not sure where to start? This session is a crash course and live demo in creating a bot using Bot Framework, Bot Services, QnA Maker, and LUIS. In ten minutes, we’ll have a working bot. The rest of the session focuses on practical use cases that will help free up many of your services organizations by automating their recurring questions and tasks.'
             }
         );
     }
