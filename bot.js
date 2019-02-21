@@ -35,8 +35,14 @@ class SampleBot {
         // Set up a series of questions to collect a street address.
         const addressSlots = [
             new SlotDetails('street', 'text', 'Where do yo live?'),
-            new SlotDetails('city', 'text', 'Tell me in which city do you live?'),
+            new SlotDetails('country', 'text', 'Tell me in which country do you live?'),
             new SlotDetails('zip', 'text', 'Please enter your zipcode.')
+        ];
+
+        const orderSlots = [
+            new SlotDetails('goods', 'text', 'What do you want to order?'),
+            new SlotDetails('brands', 'text', 'Which brand do you want to order?'),
+            new SlotDetails('quantity', 'text', 'How many do you want to order?')
         ];
 
         // Link the questions together into a parent group that contains references
@@ -45,20 +51,26 @@ class SampleBot {
             new SlotDetails('fullname', 'fullname'),
             new SlotDetails('address', 'address')
         ];
+        const orders = [
+            new SlotDetails('order', 'order')
+        ];
 
         // Add the individual child dialogs and prompts used.
         // Note that the built-in prompts work hand-in-hand with our custom SlotFillingDialog class
         // because they are both based on the provided Dialog class.
         this.dialogs.add(new SlotFillingDialog('address', addressSlots));
         this.dialogs.add(new SlotFillingDialog('fullname', fullnameSlots));
+        this.dialogs.add(new SlotFillingDialog('order', orderSlots));
         this.dialogs.add(new TextPrompt('text'));
         this.dialogs.add(new SlotFillingDialog('slot-dialog', slots));
+        this.dialogs.add(new SlotFillingDialog('order-dialog', orders));
 
         // Finally, add a 2-step WaterfallDialog that will initiate the SlotFillingDialog,
         // and then collect and display the results.
         this.dialogs.add(new WaterfallDialog('root', [
             this.startDialog.bind(this),
-            this.processResults.bind(this)
+            this.processResults.bind(this),
+            this.processSecondResults.bind(this)
         ]));
     }
 
@@ -80,7 +92,18 @@ class SampleBot {
         await step.context.sendActivity(`Your name is ${ fullname['first'] } ${ fullname['last'] }.`);
 
         const address = values['address'].values;
-        await step.context.sendActivity(`Your address is: ${ address['street'] }, ${ address['city'] } ${ address['zip'] }`);
+        await step.context.sendActivity(`Your address is: ${ address['street'] }, ${ address['country'] } ${ address['zip'] }`);
+
+        return await step.beginDialog('order-dialog');
+    }
+
+    async processSecondResults(step) {
+        // Each "slot" in the SlotFillingDialog is represented by a field in step.result.values.
+        // The complex that contain subfields have their own .values field containing the sub-values.
+        const values = step.result.values;
+
+        const order = values['order'].values;
+        await step.context.sendActivity(`You order ${ order['quantity'] } ${ order['goods'] } from ${ order['brands'] } 's brand.`);
 
         return await step.endDialog();
     }
@@ -197,7 +220,7 @@ class SampleBot {
             }
         } else if (
             turnContext.activity.type === ActivityTypes.ConversationUpdate &&
-             turnContext.activity.membersAdded[0].name !== 'Bot'
+            turnContext.activity.membersAdded[0].name !== 'Bot'
         ) {
             // Send a "this is what the bot does" message.
             const description = [
