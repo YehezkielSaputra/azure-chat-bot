@@ -1,16 +1,15 @@
 /* Hardy Saputra - Call Levels */
 
 const { ActivityTypes, CardFactory, AttachmentLayoutTypes } = require('botbuilder');
-const { UserInformation } = require('./components/UserInformationDialogue/userInformation');
+// const { UserInformation } = require('./components/UserInformationDialogue/userInformation');
+
 class SampleBot {
     /**
      * SampleBot defines the core business logic of this bot.
      * @param {ConversationState} conversationState A ConversationState object used to store dialog state.
      */
     constructor(conversationState) {
-        // Create the bot's main handler.
-        const bot = new UserInformation(conversationState);
-        bot.logic(conversationState);
+        this.logic(conversationState);
     }
 
     async sendCardResponse(turnContext, dialogTurnResult) {
