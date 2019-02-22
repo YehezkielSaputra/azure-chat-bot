@@ -1,8 +1,8 @@
 const { DialogSet, TextPrompt, ChoicePrompt, ListStyle, WaterfallDialog } = require('botbuilder-dialogs');
-const { MessageFactory } = require('botbuilder');
+const { MessageFactory, ActivityTypes } = require('botbuilder');
 
-const { SlotFillingDialog } = require('../../slotFillingDialog');
-const { SlotDetails } = require('../../slotDetails');
+const { SlotFillingDialog } = require('../../services/slotFillingDialog');
+const { SlotDetails } = require('../../services/slotDetails');
 
 const DIALOG_STATE_PROPERTY = 'dialogState';
 
@@ -121,6 +121,39 @@ class UserInformation {
         }
 
         return await step.endDialog();
+    }
+
+    /**
+     *
+     * @param {TurnContext} turnContext A TurnContext object representing an incoming message to be handled by the bot.
+     */
+    async onTurn(turnContext) {
+        if (turnContext.activity.type === ActivityTypes.Message) {
+            // Create dialog context.
+            const dc = await this.dialogs.createContext(turnContext);
+
+            if (!dc.context.responded) {
+                // Continue the current dialog if one is pending.
+                await dc.continueDialog();
+            }
+
+            if (!dc.context.responded) {
+                // If no response has been sent, start the onboarding dialog.
+                await dc.beginDialog('root');
+            }
+        } else if (
+            turnContext.activity.type === ActivityTypes.ConversationUpdate &&
+            turnContext.activity.membersAdded[0].name !== 'Bot'
+        ) {
+            // Send a "this is what the bot does" message.
+            const description = [
+                'This is a bot that demonstrates to collect multiple responses from a user.',
+                'Say anything to continue.'
+            ];
+            await turnContext.sendActivity(description.join(' '));
+        }
+
+        await this.conversationState.saveChanges(turnContext);
     }
 }
 module.exports.UserInformation = UserInformation;
