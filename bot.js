@@ -1,10 +1,13 @@
 /* Hardy Saputra - Call Levels */
 
+const { DialogSet, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { ActivityTypes } = require('botbuilder');
-const { DialogSet, WaterfallDialog } = require('botbuilder-dialogs');
+
+const { UserInformation } = require('./dialogs/UserInformation/userInformation');
+const { FlightOrder } = require('./dialogs/FlightOrder/order');
+const { Confirmation } = require('./dialogs/Confirmation/confirmation');
 
 const DIALOG_STATE_PROPERTY = 'dialogState';
-const { UserInformation } = require('./dialogs/UserInformation/userInformation');
 
 class SampleBot {
     /**
@@ -12,17 +15,37 @@ class SampleBot {
      * @param {ConversationState} conversationState A ConversationState object used to store dialog state.
      */
     constructor(conversationState) {
-        if (!conversationState) throw new Error('Missing parameter. Conversation state is required.');
+        this.logic(conversationState);
+    }
+    async logic(conversationState) {
         this.conversationState = conversationState;
+        // Create a property used to store dialog state.
         this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+
+        // Create a dialog set to include the dialogs used by this bot.
         this.dialogs = new DialogSet(this.dialogState);
+
+        this.dialogs.add(new TextPrompt('text'));
+
+        var userDetail = new UserInformation(this.dialogs);
+        var flightOrder = new FlightOrder(this.dialogs);
+        var confirmation = new Confirmation(this.dialogs);
+
+        // Finally, add a 2-step WaterfallDialog that will initiate the SlotFillingDialog,
+        // and then collect and display the results.
         this.dialogs.add(new WaterfallDialog('root', [
-            this.startDialog.bind(this)
+            this.startDialog.bind(this),
+            userDetail.userDialog.bind(this),
+            flightOrder.userDialog.bind(this),
+            confirmation.confirmDialog.bind(this)
         ]));
     }
-
+    // This is the first step of the WaterfallDialog.
+    // It kicks off the dialog with the multi-question SlotFillingDialog,
+    // then passes the aggregated results on to the next step.
     async startDialog(step) {
-        await UserInformation.startDialog(step);
+        // return await step.beginDialog('confirm-slot');
+        return await step.beginDialog('detailUser-slot');
     }
 
     /**
@@ -58,5 +81,4 @@ class SampleBot {
         await this.conversationState.saveChanges(turnContext);
     }
 }
-
 module.exports.SampleBot = SampleBot;
