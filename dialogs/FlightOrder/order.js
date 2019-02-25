@@ -1,5 +1,6 @@
 const { SlotFillingDialog } = require('../../services/slotFillingDialog');
 const { SlotDetails } = require('../../services/slotDetails');
+const { CardFactory } = require('botbuilder');
 
 // const DIALOG_STATE_PROPERTY = 'dialogState';
 
@@ -45,8 +46,45 @@ class FlightOrder {
         const orderKey = values['orderKey'].values;
         await step.context.sendActivity(`You order flight ticket from ${ orderKey['departCityKey'] } to ${ orderKey['destinationCityKey'] } for ${ orderKey['totalPassangerKey'] } passangers.`);
 
-        // console.log(this.conversationState);
+        // return await step.beginDialog('confirm-slot');
+        console.log(values);
+        const departCity = orderKey['departCityKey'];
+        const destination = orderKey['destinationCityKey'];
+        const totalPassanger = orderKey['totalPassangerKey'];
+        await step.context.sendActivity({
+            text: 'Flight Order',
+            attachments: [
+                CardFactory.receiptCard({
+                    title: 'Your Receipt Card',
+                    facts: [
+                        {
+                            key: 'Depart City',
+                            value: departCity
+                        },
+                        {
+                            key: 'Destination',
+                            value: destination
+                        },
+                        {
+                            key: 'Total Passanger',
+                            value: totalPassanger
+                        }
+                    ],
+                    buttons: CardFactory.actions([
+                        {
+                            type: 'openUrl',
+                            title: 'Submit',
+                            value: 'https://google.com'
+                        }
+                    ])
+                })
+            ]
+        });
         return await step.beginDialog('confirm-slot');
+    }
+
+    async confirmDialog(step) {
+        return await step.endDialog();
     }
 }
 
