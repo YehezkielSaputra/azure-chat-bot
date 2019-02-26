@@ -1,6 +1,8 @@
+const { CardFactory } = require('botbuilder');
+
 const { SlotFillingDialog } = require('../../services/slotFillingDialog');
 const { SlotDetails } = require('../../services/slotDetails');
-const { CardFactory } = require('botbuilder');
+const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
 
 class FlightOrder {
     /**
@@ -35,6 +37,8 @@ class FlightOrder {
         const departCity = orderKey['departCityKey'];
         const destination = orderKey['destinationCityKey'];
         const totalPassanger = orderKey['totalPassangerKey'];
+
+        var welcome = new WelcomeMessage(step);
         await step.context.sendActivity({
             text: 'Flight Order',
             attachments: [
@@ -58,17 +62,14 @@ class FlightOrder {
                         {
                             type: 'openUrl',
                             title: 'Submit',
-                            value: 'https://google.com'
+                            value: welcome.sendWelcomeMessage(step)
                         }
                     ])
                 })
             ]
         });
-        return await step.beginDialog('confirm-slot');
-    }
 
-    async confirmDialog(step) {
-        return await step.endDialog();
+        return await welcome.sendWelcomeMessage(step);
     }
 }
 
