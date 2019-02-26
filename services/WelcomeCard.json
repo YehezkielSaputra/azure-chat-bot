@@ -1,0 +1,46 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Image",
+      "url": "https://aka.ms/bf-welcome-card-image",
+      "size": "stretch"
+    },
+    {
+      "type": "TextBlock",
+      "spacing": "medium",
+      "size": "default",
+      "weight": "bolder",
+      "text": "Azure Chatbot",
+      "wrap": true,
+      "maxLines": 0
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "isSubtle": true,
+      "text": "Hi, I am Azure. Nice to see you. Please, ask me anything.",
+      "wrap": true,
+      "maxLines": 0
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "User Information",
+      "url": "#"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "Flight Order",
+      "url": "#"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "FAQ",
+      "url": "#"
+    }
+  ]
+}
