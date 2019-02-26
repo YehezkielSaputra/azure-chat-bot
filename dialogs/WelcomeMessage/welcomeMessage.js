@@ -2,6 +2,7 @@ const { MessageFactory } = require('botbuilder');
 
 const USER_INFORMATION = 'User Information';
 const FLIGHT_ORDER = 'Flight Order';
+const MULTIPLE_BUTTON = 'Multiple Button';
 
 class WelcomeMessage {
     /**
@@ -19,7 +20,7 @@ class WelcomeMessage {
      * @param {Object} turnContext A TurnContext instance containing all the data needed for processing this conversation turn.
      */
     async sendWelcomeMessage(turnContext) {
-        const reply = MessageFactory.suggestedActions([USER_INFORMATION, FLIGHT_ORDER], `What can i help you today?`);
+        const reply = MessageFactory.suggestedActions([USER_INFORMATION, FLIGHT_ORDER, MULTIPLE_BUTTON], `What can i help you today?`);
         await turnContext.context.sendActivity(reply);
     }
 }

@@ -1,15 +1,18 @@
 /* Hardy Saputra - Call Levels */
 
 const { DialogSet, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
-const { ActivityTypes, MessageFactory } = require('botbuilder');
+const { ActivityTypes, MessageFactory, CardFactory } = require('botbuilder');
 
 const USER_INFORMATION = 'User Information';
 const FLIGHT_ORDER = 'Flight Order';
+const MULTIPLE_BUTTON = 'Multiple Button';
 const WELCOMED_USER = 'welcomedUserProperty';
 
 const { UserInformation } = require('./dialogs/UserInformation/userInformation');
 const { FlightOrder } = require('./dialogs/FlightOrder/order');
 const { Confirmation } = require('./dialogs/Confirmation/confirmation');
+
+const WelcomeCard = require('./services/WelcomeCard.json');
 
 const DIALOG_STATE_PROPERTY = 'dialogState';
 
@@ -67,7 +70,7 @@ class SampleBot {
                         'Ask me anything to continue.'
                     ];
                     await turnContext.sendActivity(description.join(' '));
-                    const reply = MessageFactory.suggestedActions([USER_INFORMATION, FLIGHT_ORDER], `What can i help you today?`);
+                    const reply = MessageFactory.suggestedActions([USER_INFORMATION, FLIGHT_ORDER, MULTIPLE_BUTTON], `What can i help you today?`);
                     await turnContext.sendActivity(reply);
                 }
             }
@@ -88,6 +91,12 @@ class SampleBot {
                 break;
             case 'flight order':
                 await dc.beginDialog('flightOrder');
+                break;
+            case 'multiple button':
+                await turnContext.sendActivity({
+                    text: 'Intro Adaptive Card',
+                    attachments: [CardFactory.adaptiveCard(WelcomeCard)]
+                });
                 break;
             default :
                 await dc.continueDialog();
