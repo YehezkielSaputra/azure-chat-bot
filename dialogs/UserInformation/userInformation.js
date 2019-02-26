@@ -1,6 +1,6 @@
 const { SlotFillingDialog } = require('../../services/slotFillingDialog');
 const { SlotDetails } = require('../../services/slotDetails');
-
+const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
 class UserInformation {
     /**
      * SampleBot defines the core business logic of this bot.
@@ -41,7 +41,8 @@ class UserInformation {
         const address = values['addressKeys'].values;
         await step.context.sendActivity(`Your address is: ${ address['streetKey'] }, ${ address['countryKey'] }, ${ address['zipKey'] }`);
 
-        return await step.beginDialog('order-slot');
+        var welcome = new WelcomeMessage(step);
+        return await welcome.sendWelcomeMessage(step);
     }
 }
 
