@@ -45,8 +45,10 @@ class SampleBot {
         ]));
 
         this.dialogs.add(new WaterfallDialog('flightOrder', [
-            this.startSecondDialog.bind(this),
-            flightOrder.userDialog.bind(this)
+            flightOrder.flightOrderInputDepartCity.bind(this),
+            flightOrder.flightOrderInputDestinationCity.bind(this),
+            flightOrder.flightOrderInputTotalPassanger.bind(this),
+            flightOrder.flightOrderResult.bind(this)
         ]));
     }
 

@@ -1,9 +1,10 @@
 const { CardFactory } = require('botbuilder');
-const { Dialog } = require('botbuilder-dialogs');
 
-// const { DialogBuilder } = require('../../services/dialogBuilder');
-const { DetailDialog } = require('../../services/detailDialog');
 const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
+
+let departCity = '';
+let destinationCity = '';
+let totalPassanger = '';
 
 class FlightOrder {
     /**
@@ -15,29 +16,26 @@ class FlightOrder {
     }
     async logic(dialogs) {
         this.dialogs = dialogs;
-
-        const orderSlot = [
-            new DetailDialog('departCityKey', 'text', 'Please input depart city'),
-            new DetailDialog('destinationCityKey', 'text', 'Please input your destination'),
-            new DetailDialog('totalPassangerKey', 'text', 'How many passanger do you want to order?')
-        ];
-
-        const slots = [
-            new DetailDialog('orderKey', 'orderSlot')
-        ];
-
-        this.dialogs.add(new Dialog('orderSlot', orderSlot));
-        this.dialogs.add(new Dialog('order-slot', slots));
     }
 
-    async userDialog(step) {
-        const values = step.result.values;
-        const orderKey = values['orderKey'].values;
-        await step.context.sendActivity(`You order flight ticket from ${ orderKey['departCityKey'] } to ${ orderKey['destinationCityKey'] } for ${ orderKey['totalPassangerKey'] } passangers.`);
+    async flightOrderInputDepartCity(step) {
+        step.values.guestInfo = {};
+        return await step.prompt('text', `Please input depart city.`);
+    }
 
-        const departCity = orderKey['departCityKey'];
-        const destination = orderKey['destinationCityKey'];
-        const totalPassanger = orderKey['totalPassangerKey'];
+    async flightOrderInputDestinationCity(step) {
+        departCity = step.result;
+        return await step.prompt('text', `Please input your destination.`);
+    }
+
+    async flightOrderInputTotalPassanger(step) {
+        destinationCity = step.result;
+        return await step.prompt('text', `How many passanger do you want to order?`);
+    }
+
+    async flightOrderResult(step) {
+        totalPassanger = step.result;
+        await step.prompt('text', `You order flight ticket from  ${ departCity } to ${ destinationCity } for ${ totalPassanger } passangers.`);
 
         var welcome = new WelcomeMessage(step);
         await step.context.sendActivity({
@@ -52,7 +50,7 @@ class FlightOrder {
                         },
                         {
                             key: 'Destination',
-                            value: destination
+                            value: destinationCity
                         },
                         {
                             key: 'Total Passanger',
