@@ -1,6 +1,11 @@
-const { DialogBuilder } = require('../../services/dialogBuilder');
-const { DetailDialog } = require('../../services/detailDialog');
 const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
+
+let firstName = '';
+let lastName = '';
+let city = '';
+let country = '';
+let zipCode = '';
+
 class UserInformation {
     /**
      * SampleBot defines the core business logic of this bot.
@@ -9,37 +14,40 @@ class UserInformation {
     constructor(dialogs) {
         this.logic(dialogs);
     }
+
     async logic(dialogs) {
         this.dialogs = dialogs;
-
-        const nameSlot = [
-            new DetailDialog('firstNameKey', 'text', 'What is your first name?'),
-            new DetailDialog('lastNameKey', 'text', 'How about your last name?')
-        ];
-
-        const addressSlots = [
-            new DetailDialog('streetKey', 'text', 'Where do yo live?'),
-            new DetailDialog('countryKey', 'text', 'Tell me in which country do you live?'),
-            new DetailDialog('zipKey', 'text', 'Please enter your zipcode.')
-        ];
-
-        const slots = [
-            new DetailDialog('nameKeys', 'nameSlot'),
-            new DetailDialog('addressKeys', 'addressSlot')
-        ];
-
-        this.dialogs.add(new DialogBuilder('nameSlot', nameSlot));
-        this.dialogs.add(new DialogBuilder('addressSlot', addressSlots));
-        this.dialogs.add(new DialogBuilder('detailUser-slot', slots));
     }
 
-    async userDialog(step) {
-        const values = step.result.values;
-        const nameKeys = values['nameKeys'].values;
-        await step.context.sendActivity(`Your name is ${ nameKeys['firstNameKey'] } ${ nameKeys['lastNameKey'] }.`);
+    async userInformationAskFirstName(step) {
+        step.values.guestInfo = {};
+        return await step.prompt('text', `What is your first name?`);
+    }
 
-        const address = values['addressKeys'].values;
-        await step.context.sendActivity(`Your address is: ${ address['streetKey'] }, ${ address['countryKey'] }, ${ address['zipKey'] }`);
+    async userInformationAskLastName(step) {
+        firstName = step.result;
+        return await step.prompt('text', `Hi ${ firstName }. How about your last name?`);
+    }
+
+    async userInformationAskCity(step) {
+        lastName = step.result;
+        return await step.prompt('text', `Where do yo live?`);
+    }
+
+    async userInformationAskCountry(step) {
+        city = step.result;
+        return await step.prompt('text', `Tell me in which country do you live?`);
+    }
+
+    async userInformationAskZipCode(step) {
+        country = step.result;
+        return await step.prompt('text', `Please enter your zipcode.`);
+    }
+
+    async userInformationResult(step) {
+        zipCode = step.result;
+        await step.prompt('text', `Hi ${ firstName } ${ lastName }.`);
+        await step.prompt('text', `Your address is ${ city } , ${ country } ,  ${ zipCode }.`);
 
         var welcome = new WelcomeMessage(step);
         return await welcome.sendWelcomeMessage(step);

@@ -1,6 +1,7 @@
 const { CardFactory } = require('botbuilder');
+const { Dialog } = require('botbuilder-dialogs');
 
-const { DialogBuilder } = require('../../services/dialogBuilder');
+// const { DialogBuilder } = require('../../services/dialogBuilder');
 const { DetailDialog } = require('../../services/detailDialog');
 const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
 
@@ -25,8 +26,8 @@ class FlightOrder {
             new DetailDialog('orderKey', 'orderSlot')
         ];
 
-        this.dialogs.add(new DialogBuilder('orderSlot', orderSlot));
-        this.dialogs.add(new DialogBuilder('order-slot', slots));
+        this.dialogs.add(new Dialog('orderSlot', orderSlot));
+        this.dialogs.add(new Dialog('order-slot', slots));
     }
 
     async userDialog(step) {
@@ -62,7 +63,7 @@ class FlightOrder {
                         {
                             type: 'openUrl',
                             title: 'Submit',
-                            value: welcome.sendWelcomeMessage(step)
+                            value: ''
                         }
                     ])
                 })

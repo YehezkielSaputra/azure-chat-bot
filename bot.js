@@ -10,7 +10,6 @@ const WELCOMED_USER = 'welcomedUserProperty';
 
 const { UserInformation } = require('./dialogs/UserInformation/userInformation');
 const { FlightOrder } = require('./dialogs/FlightOrder/order');
-const { Confirmation } = require('./dialogs/Confirmation/confirmation');
 
 const WelcomeCard = require('./services/WelcomeCard.json');
 
@@ -33,18 +32,21 @@ class SampleBot {
 
         this.dialogs.add(new TextPrompt('text'));
 
-        var userDetail = new UserInformation(this.dialogs);
+        var userInformation = new UserInformation(this.dialogs);
         var flightOrder = new FlightOrder(this.dialogs);
-        var confirmation = new Confirmation(this.dialogs);
 
         this.dialogs.add(new WaterfallDialog('userInformation', [
-            this.startDialog.bind(this),
-            userDetail.userDialog.bind(this)
+            userInformation.userInformationAskFirstName.bind(this),
+            userInformation.userInformationAskLastName.bind(this),
+            userInformation.userInformationAskCity.bind(this),
+            userInformation.userInformationAskCountry.bind(this),
+            userInformation.userInformationAskZipCode.bind(this),
+            userInformation.userInformationResult.bind(this)
         ]));
+
         this.dialogs.add(new WaterfallDialog('flightOrder', [
             this.startSecondDialog.bind(this),
-            flightOrder.userDialog.bind(this),
-            confirmation.confirmDialog.bind(this)
+            flightOrder.userDialog.bind(this)
         ]));
     }
 
