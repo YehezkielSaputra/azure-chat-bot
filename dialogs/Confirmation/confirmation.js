@@ -1,5 +1,5 @@
-const { SlotFillingDialog } = require('../../services/slotFillingDialog');
-const { SlotDetails } = require('../../services/slotDetails');
+const { DialogBuilder } = require('../../services/dialogBuilder');
+const { DetailDialog } = require('../../services/detailDialog');
 
 const { MessageFactory } = require('botbuilder');
 class Confirmation {
@@ -15,10 +15,10 @@ class Confirmation {
         this.dialogs = dialogs;
 
         const confirmSlot = [
-            new SlotDetails('confirmKey', 'text', 'Please, type ok if you want to continue transaction.')
+            new DetailDialog('confirmKey', 'text', 'Please, type ok if you want to continue transaction.')
         ];
 
-        this.dialogs.add(new SlotFillingDialog('confirm-slot', confirmSlot));
+        this.dialogs.add(new DialogBuilder('confirm-slot', confirmSlot));
     }
     /**
      * Every conversation turn for our SuggestedActionsbot will call this method.

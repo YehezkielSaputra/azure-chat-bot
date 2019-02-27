@@ -1,7 +1,7 @@
 const { CardFactory } = require('botbuilder');
 
-const { SlotFillingDialog } = require('../../services/slotFillingDialog');
-const { SlotDetails } = require('../../services/slotDetails');
+const { DialogBuilder } = require('../../services/dialogBuilder');
+const { DetailDialog } = require('../../services/detailDialog');
 const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
 
 class FlightOrder {
@@ -16,17 +16,17 @@ class FlightOrder {
         this.dialogs = dialogs;
 
         const orderSlot = [
-            new SlotDetails('departCityKey', 'text', 'Please input depart city'),
-            new SlotDetails('destinationCityKey', 'text', 'Please input your destination'),
-            new SlotDetails('totalPassangerKey', 'text', 'How many passanger do you want to order?')
+            new DetailDialog('departCityKey', 'text', 'Please input depart city'),
+            new DetailDialog('destinationCityKey', 'text', 'Please input your destination'),
+            new DetailDialog('totalPassangerKey', 'text', 'How many passanger do you want to order?')
         ];
 
         const slots = [
-            new SlotDetails('orderKey', 'orderSlot')
+            new DetailDialog('orderKey', 'orderSlot')
         ];
 
-        this.dialogs.add(new SlotFillingDialog('orderSlot', orderSlot));
-        this.dialogs.add(new SlotFillingDialog('order-slot', slots));
+        this.dialogs.add(new DialogBuilder('orderSlot', orderSlot));
+        this.dialogs.add(new DialogBuilder('order-slot', slots));
     }
 
     async userDialog(step) {

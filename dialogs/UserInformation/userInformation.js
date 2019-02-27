@@ -1,5 +1,5 @@
-const { SlotFillingDialog } = require('../../services/slotFillingDialog');
-const { SlotDetails } = require('../../services/slotDetails');
+const { DialogBuilder } = require('../../services/dialogBuilder');
+const { DetailDialog } = require('../../services/detailDialog');
 const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
 class UserInformation {
     /**
@@ -13,24 +13,24 @@ class UserInformation {
         this.dialogs = dialogs;
 
         const nameSlot = [
-            new SlotDetails('firstNameKey', 'text', 'What is your first name?'),
-            new SlotDetails('lastNameKey', 'text', 'How about your last name?')
+            new DetailDialog('firstNameKey', 'text', 'What is your first name?'),
+            new DetailDialog('lastNameKey', 'text', 'How about your last name?')
         ];
 
         const addressSlots = [
-            new SlotDetails('streetKey', 'text', 'Where do yo live?'),
-            new SlotDetails('countryKey', 'text', 'Tell me in which country do you live?'),
-            new SlotDetails('zipKey', 'text', 'Please enter your zipcode.')
+            new DetailDialog('streetKey', 'text', 'Where do yo live?'),
+            new DetailDialog('countryKey', 'text', 'Tell me in which country do you live?'),
+            new DetailDialog('zipKey', 'text', 'Please enter your zipcode.')
         ];
 
         const slots = [
-            new SlotDetails('nameKeys', 'nameSlot'),
-            new SlotDetails('addressKeys', 'addressSlot')
+            new DetailDialog('nameKeys', 'nameSlot'),
+            new DetailDialog('addressKeys', 'addressSlot')
         ];
 
-        this.dialogs.add(new SlotFillingDialog('nameSlot', nameSlot));
-        this.dialogs.add(new SlotFillingDialog('addressSlot', addressSlots));
-        this.dialogs.add(new SlotFillingDialog('detailUser-slot', slots));
+        this.dialogs.add(new DialogBuilder('nameSlot', nameSlot));
+        this.dialogs.add(new DialogBuilder('addressSlot', addressSlots));
+        this.dialogs.add(new DialogBuilder('detailUser-slot', slots));
     }
 
     async userDialog(step) {
