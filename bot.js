@@ -1,15 +1,10 @@
 /* Hardy Saputra - Call Levels */
 
-const { DialogSet, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
-const { ActivityTypes, MessageFactory, CardFactory } = require('botbuilder');
+const { DialogSet } = require('botbuilder-dialogs');
+const { ActivityTypes, CardFactory } = require('botbuilder');
 
-const USER_INFORMATION = 'User Information';
-const FLIGHT_ORDER = 'Flight Order';
-const MULTIPLE_BUTTON = 'Multiple Button';
-const WELCOMED_USER = 'welcomedUserProperty';
-
-const { UserInformation } = require('./dialogs/UserInformation/userInformation');
-const { FlightOrder } = require('./dialogs/FlightOrder/order');
+const { WelcomeMessage } = require('./dialogs/WelcomeMessage/welcomeMessage');
+const { Dialogs } = require('./services/dialogs');
 
 const WelcomeCard = require('./services/WelcomeCard.json');
 
@@ -21,43 +16,12 @@ class SampleBot {
      * @param {ConversationState} conversationState A ConversationState object used to store dialog state.
      */
     constructor(conversationState) {
-        this.welcomedUserProperty = conversationState.createProperty(WELCOMED_USER);
-        this.logic(conversationState);
-    }
-    async logic(conversationState) {
         this.conversationState = conversationState;
         this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
 
         this.dialogs = new DialogSet(this.dialogState);
 
-        this.dialogs.add(new TextPrompt('text'));
-
-        var userInformation = new UserInformation(this.dialogs);
-        var flightOrder = new FlightOrder(this.dialogs);
-
-        this.dialogs.add(new WaterfallDialog('userInformation', [
-            userInformation.userInformationAskFirstName.bind(this),
-            userInformation.userInformationAskLastName.bind(this),
-            userInformation.userInformationAskCity.bind(this),
-            userInformation.userInformationAskCountry.bind(this),
-            userInformation.userInformationAskZipCode.bind(this),
-            userInformation.userInformationResult.bind(this)
-        ]));
-
-        this.dialogs.add(new WaterfallDialog('flightOrder', [
-            flightOrder.flightOrderInputDepartCity.bind(this),
-            flightOrder.flightOrderInputDestinationCity.bind(this),
-            flightOrder.flightOrderInputTotalPassanger.bind(this),
-            flightOrder.flightOrderResult.bind(this)
-        ]));
-    }
-
-    async startDialog(step) {
-        return await step.beginDialog('detailUser-slot');
-    }
-
-    async startSecondDialog(step) {
-        return await step.beginDialog('order-slot');
+        this.route = new Dialogs(this.dialogState);
     }
 
     /**
@@ -65,21 +29,6 @@ class SampleBot {
      * Messages are only sent to conversation members who aren't the bot.
      * @param {TurnContext} turnContext
      */
-    async sendWelcomeMessage(turnContext) {
-        if (turnContext.activity.membersAdded.length !== 0) {
-            for (let idx in turnContext.activity.membersAdded) {
-                if (turnContext.activity.membersAdded[idx].id !== turnContext.activity.recipient.id) {
-                    const description = [
-                        'Hi I am Azure Bot.',
-                        'Ask me anything to continue.'
-                    ];
-                    await turnContext.sendActivity(description.join(' '));
-                    const reply = MessageFactory.suggestedActions([USER_INFORMATION, FLIGHT_ORDER, MULTIPLE_BUTTON], `What can i help you today?`);
-                    await turnContext.sendActivity(reply);
-                }
-            }
-        }
-    }
 
     /**
      *
@@ -87,7 +36,7 @@ class SampleBot {
      */
     async onTurn(turnContext) {
         if (turnContext.activity.type === ActivityTypes.Message) {
-            const dc = await this.dialogs.createContext(turnContext);
+            const dc = await this.route.dialogs.createContext(turnContext);
             let text = turnContext.activity.text.toLowerCase();
             switch (text) {
             case 'user information':
@@ -107,7 +56,14 @@ class SampleBot {
             }
             await this.conversationState.saveChanges(turnContext);
         } else if (turnContext.activity.type === ActivityTypes.ConversationUpdate) {
-            await this.sendWelcomeMessage(turnContext);
+            if (turnContext.activity.membersAdded.length !== 0) {
+                for (let idx in turnContext.activity.membersAdded) {
+                    if (turnContext.activity.membersAdded[idx].id !== turnContext.activity.recipient.id) {
+                        var welcome = new WelcomeMessage(turnContext);
+                        await welcome.sendWelcomeMessage(turnContext);
+                    }
+                }
+            }
         } else {
             await turnContext.sendActivity(`[${ turnContext.activity.type } event detected]`);
         }
