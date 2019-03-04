@@ -1,7 +1,5 @@
 const { CardFactory } = require('botbuilder');
 
-const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
-
 let departCity = '';
 let destinationCity = '';
 let totalPassanger = '';
@@ -37,7 +35,6 @@ class FlightOrder {
         totalPassanger = step.result;
         await step.prompt('text', `You order flight ticket from  ${ departCity } to ${ destinationCity } for ${ totalPassanger } passangers.`);
 
-        var welcome = new WelcomeMessage(step);
         await step.context.sendActivity({
             text: 'Flight Order',
             attachments: [
@@ -68,7 +65,7 @@ class FlightOrder {
             ]
         });
 
-        return await welcome.sendWelcomeMessage(step);
+        return await step.endDialog();
     }
 }
 
