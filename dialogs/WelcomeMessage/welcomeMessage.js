@@ -20,8 +20,13 @@ class WelcomeMessage {
      * @param {Object} turnContext A TurnContext instance containing all the data needed for processing this conversation turn.
      */
     async sendWelcomeMessage(turnContext) {
+        const description = [
+            'Hi I am Azure Bot.',
+            'Ask me anything to continue.'
+        ];
+        await turnContext.sendActivity(description.join(' '));
         const reply = MessageFactory.suggestedActions([USER_INFORMATION, FLIGHT_ORDER, MULTIPLE_BUTTON], `What can i help you today?`);
-        await turnContext.context.sendActivity(reply);
+        await turnContext.sendActivity(reply);
     }
 }
 
