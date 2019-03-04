@@ -1,4 +1,4 @@
-const { WelcomeMessage } = require('../WelcomeMessage/welcomeMessage');
+// const { DialogSet, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 
 let firstName = '';
 let lastName = '';
@@ -6,17 +6,31 @@ let city = '';
 let country = '';
 let zipCode = '';
 
+// const DIALOG_STATE_PROPERTY = 'dialogState';
+
 class UserInformation {
     /**
      * SampleBot defines the core business logic of this bot.
      * @param {ConversationState} conversationState A ConversationState object used to store dialog state.
      */
-    constructor(dialogs) {
-        this.logic(dialogs);
-    }
+    constructor(conversationState) {
+        this.conversationState = conversationState;
+        // this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
 
-    async logic(dialogs) {
-        this.dialogs = dialogs;
+        // this.dialogs = new DialogSet(this.dialogState);
+
+        // this.dialogs.add(new TextPrompt('text'));
+
+        // var userInformation = new UserInformation(this.dialogs);
+
+        // this.dialogs.add(new WaterfallDialog('userInformation', [
+        //     userInformation.userInformationAskFirstName.bind(this),
+        //     userInformation.userInformationAskLastName.bind(this),
+        //     userInformation.userInformationAskCity.bind(this),
+        //     userInformation.userInformationAskCountry.bind(this),
+        //     userInformation.userInformationAskZipCode.bind(this),
+        //     userInformation.userInformationResult.bind(this)
+        // ]));
     }
 
     async userInformationAskFirstName(step) {
@@ -49,8 +63,7 @@ class UserInformation {
         await step.prompt('text', `Hi ${ firstName } ${ lastName }.`);
         await step.prompt('text', `Your address is ${ city } , ${ country } ,  ${ zipCode }.`);
 
-        var welcome = new WelcomeMessage(step);
-        return await welcome.sendWelcomeMessage(step);
+        return await step.endDialog();
     }
 }
 
