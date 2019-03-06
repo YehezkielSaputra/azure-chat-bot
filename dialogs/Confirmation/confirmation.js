@@ -35,7 +35,6 @@ class Confirmation {
         } else {
             await turnContext.context.sendActivity('Are you sure?');
         }
-        return await turnContext.endDialog();
     }
 }
 

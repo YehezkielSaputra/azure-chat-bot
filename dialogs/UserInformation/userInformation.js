@@ -1,4 +1,6 @@
-// const { DialogSet, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+const { DialogSet, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+
+const DIALOG_STATE_PROPERTY = 'userInformation';
 
 let firstName = '';
 let lastName = '';
@@ -6,31 +8,27 @@ let city = '';
 let country = '';
 let zipCode = '';
 
-// const DIALOG_STATE_PROPERTY = 'dialogState';
-
 class UserInformation {
     /**
      * SampleBot defines the core business logic of this bot.
      * @param {ConversationState} conversationState A ConversationState object used to store dialog state.
      */
-    constructor(conversationState) {
-        this.conversationState = conversationState;
-        // this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+    constructor(ref) {
+        this.conversationState = ref.conversationState;
+        this.dialogState = this.conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.dialogs = new DialogSet(this.dialogState);
+        this.dialogs.add(new TextPrompt('text'));
 
-        // this.dialogs = new DialogSet(this.dialogState);
+        ref.dialogs.add(new WaterfallDialog('userInformation', [
+            this.userInformationAskFirstName.bind(ref),
+            this.userInformationAskLastName.bind(ref),
+            this.userInformationAskCity.bind(ref),
+            this.userInformationAskCountry.bind(ref),
+            this.userInformationAskZipCode.bind(ref),
+            this.userInformationResult.bind(ref)
+        ]));
 
-        // this.dialogs.add(new TextPrompt('text'));
-
-        // var userInformation = new UserInformation(this.dialogs);
-
-        // this.dialogs.add(new WaterfallDialog('userInformation', [
-        //     userInformation.userInformationAskFirstName.bind(this),
-        //     userInformation.userInformationAskLastName.bind(this),
-        //     userInformation.userInformationAskCity.bind(this),
-        //     userInformation.userInformationAskCountry.bind(this),
-        //     userInformation.userInformationAskZipCode.bind(this),
-        //     userInformation.userInformationResult.bind(this)
-        // ]));
+        ref.handler.push('userInformation');
     }
 
     async userInformationAskFirstName(step) {
@@ -62,8 +60,6 @@ class UserInformation {
         zipCode = step.result;
         await step.prompt('text', `Hi ${ firstName } ${ lastName }.`);
         await step.prompt('text', `Your address is ${ city } , ${ country } ,  ${ zipCode }.`);
-
-        return await step.endDialog();
     }
 }
 
