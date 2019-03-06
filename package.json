@@ -18,6 +18,7 @@
         "botbuilder": "^4.2.0",
         "botbuilder-dialogs": "^4.2.0",
         "botframework-config": "^4.2.0",
+        "camelcase": "^5.2.0",
         "dotenv": "^6.1.0",
         "restify": "^7.2.3"
     },
