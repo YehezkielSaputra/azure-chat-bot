@@ -1,14 +1,16 @@
 /* Hardy Saputra - Call Levels */
 
-const { DialogSet } = require('botbuilder-dialogs');
-const { ActivityTypes, CardFactory } = require('botbuilder');
+const { DialogSet, TextPrompt } = require('botbuilder-dialogs');
+const { MessageFactory } = require('botbuilder');
 
-const { WelcomeMessage } = require('./dialogs/WelcomeMessage/welcomeMessage');
-const { Dialogs } = require('./services/dialogs');
-
-const WelcomeCard = require('./services/WelcomeCard.json');
+const { UserInformation } = require('./dialogs/UserInformation/userInformation');
+const { FlightOrder } = require('./dialogs/FlightOrder/flightOrder');
+const { Router } = require('./services/router');
 
 const DIALOG_STATE_PROPERTY = 'dialogState';
+const USER_INFORMATION = 'User Information';
+const FLIGHT_ORDER = 'Flight Order';
+const MULTIPLE_BUTTON = 'Multiple Button';
 
 class SampleBot {
     /**
@@ -21,7 +23,11 @@ class SampleBot {
 
         this.dialogs = new DialogSet(this.dialogState);
 
-        this.route = new Dialogs(this.dialogState);
+        this.dialogs.add(new TextPrompt('text'));
+        this.handler = [];
+
+        this.userInformation = new UserInformation(this);
+        this.flightOrder = new FlightOrder(this);
     }
 
     /**
@@ -29,44 +35,23 @@ class SampleBot {
      * Messages are only sent to conversation members who aren't the bot.
      * @param {TurnContext} turnContext
      */
+    async sendWelcomeMessage(turnContext) {
+        const description = [
+            'Hi I am Azure Bot.',
+            'Ask me anything to continue.'
+        ];
+        await turnContext.sendActivity(description.join(' '));
+        const reply = MessageFactory.suggestedActions([USER_INFORMATION, FLIGHT_ORDER, MULTIPLE_BUTTON], `What can i help you today?`);
+        await turnContext.sendActivity(reply);
+    }
 
     /**
      *
      * @param {TurnContext} turnContext A TurnContext object representing an incoming message to be handled by the bot.
      */
     async onTurn(turnContext) {
-        if (turnContext.activity.type === ActivityTypes.Message) {
-            const dc = await this.route.dialogs.createContext(turnContext);
-            let text = turnContext.activity.text.toLowerCase();
-            switch (text) {
-            case 'user information':
-                await dc.beginDialog('userInformation');
-                break;
-            case 'flight order':
-                await dc.beginDialog('flightOrder');
-                break;
-            case 'multiple button':
-                await turnContext.sendActivity({
-                    text: 'Intro Adaptive Card',
-                    attachments: [CardFactory.adaptiveCard(WelcomeCard)]
-                });
-                break;
-            default :
-                await dc.continueDialog();
-            }
-            await this.conversationState.saveChanges(turnContext);
-        } else if (turnContext.activity.type === ActivityTypes.ConversationUpdate) {
-            if (turnContext.activity.membersAdded.length !== 0) {
-                for (let idx in turnContext.activity.membersAdded) {
-                    if (turnContext.activity.membersAdded[idx].id !== turnContext.activity.recipient.id) {
-                        var welcome = new WelcomeMessage(turnContext);
-                        await welcome.sendWelcomeMessage(turnContext);
-                    }
-                }
-            }
-        } else {
-            await turnContext.sendActivity(`[${ turnContext.activity.type } event detected]`);
-        }
+        await new Router().handle(this, turnContext);
     }
 }
+
 module.exports.SampleBot = SampleBot;
